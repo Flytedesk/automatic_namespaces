@@ -1,4 +1,5 @@
 require "bundler/setup"
+require 'logger'
 require "packs-rails"
 
 RSpec.configure do |config|

@@ -31,6 +31,10 @@ RSpec.describe AutomaticNamespaces do
     expect(defined?(ShoesUI::Sneakers)).to eq("constant")
   end
 
+  it 'can find classes that are in an automatic namespace pack which use namespace override' do
+    expect(defined?(ShoesUI::Sneakers)).to eq("constant")
+  end
+
   it 'can find classes that are in an automatic namespace pack which use nested namespace override' do
     expect(defined?(Hats::Summer::BaseballCap)).to eq("constant")
     expect(defined?(Hats::Winter::WoolBeanie)).to eq("constant")

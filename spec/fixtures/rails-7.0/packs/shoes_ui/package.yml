@@ -1,5 +1,4 @@
 metadata:
-  automatic_pack_namespace: true
-  namespace_override: ShoesUI
+  automatic_pack_namespace: ShoesUI
   automatic_pack_namespace_exclusions:
     - app/excluded

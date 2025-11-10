@@ -1,8 +1,13 @@
 require 'yaml'
 
 class AutomaticNamespaces::Autoloader
-  DEFAULT_EXCLUDED_DIRS = %w[/app/helpers /app/inputs /app/javascript /app/views].freeze
+  ROOT_KEY = "automatic_pack_namespace".freeze
   PACKAGE_EXCLUDED_DIRS_KEY = "automatic_pack_namespace_exclusions".freeze
+  PACKAGE_AUTOLOAD_GLOB_KEY_OLD = "autoload_glob".freeze
+  PACKAGE_AUTOLOAD_GLOB_KEY = "automatic_pack_namespace_autoload_glob".freeze
+  PACKAGE_NAMESPACE_OVERRIDE_KEY_OLD = "namespace_override".freeze
+
+  DEFAULT_EXCLUDED_DIRS = %w[/app/helpers /app/inputs /app/javascript /app/views].freeze
 
   def enable_automatic_namespaces
     namespaced_packages.each do |pack, metadata|
@@ -27,7 +32,7 @@ class AutomaticNamespaces::Autoloader
   end
 
   def pack_directories(pack_root_dir, metadata)
-    glob = metadata['autoload_glob'] || "/**/app/*"
+    glob = metadata[PACKAGE_AUTOLOAD_GLOB_KEY] || metadata[PACKAGE_AUTOLOAD_GLOB_KEY_OLD] || "/**/app/*"
     Dir.glob("#{pack_root_dir}#{glob}").select { |dir| namespaced_directory?(dir, metadata) }
   end
 
@@ -40,12 +45,19 @@ class AutomaticNamespaces::Autoloader
   end
 
   def define_namespace(pack, metadata)
-    namespace_name = metadata['namespace_override'] || pack.last_name.camelize
     namespace_object = Object
-    namespace_name.split('::').each do |module_name|
+    namespace_name(pack, metadata).split('::').each do |module_name|
       namespace_object = find_or_create_module(namespace_object, module_name)
     end
     namespace_object
+  end
+
+  def namespace_name(pack, metadata)
+    if [true, false, "true", "false"].exclude?(metadata[ROOT_KEY])
+      metadata[ROOT_KEY]
+    else
+      metadata[PACKAGE_NAMESPACE_OVERRIDE_KEY_OLD] || pack.last_name.camelize
+    end
   end
 
   def find_or_create_module(namespace_object, module_name)
@@ -57,7 +69,7 @@ class AutomaticNamespaces::Autoloader
   def namespaced_packages
     Packs.all
          .map {|pack| [pack, package_metadata(pack)] }
-         .select {|_pack, metadata| metadata && metadata["automatic_pack_namespace"] }
+         .select {|_pack, metadata| metadata && metadata[ROOT_KEY] }
   end
 
   def package_metadata(pack)

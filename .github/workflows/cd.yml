@@ -1,45 +1,35 @@
 name: CD
 
 on:
-  # This ensures we only run CD after the CI workflow has completed on the main branch.
+  # Only run CD after CI completes successfully on main.
   workflow_run:
     workflows: [CI]
     types: [completed]
     branches: [main]
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    # We only want to run this if CI completes *sucessfully*, see more here:
-    # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#running-a-workflow-based-on-the-conclusion-of-another-workflow
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' }}
+
+    permissions:
+      contents: write  # for pushing tags / creating releases
+
+    env:
+      GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
+
     steps:
-      - uses: actions/checkout@cbb722410c2e876e24abbe8de2cc27693e501dcb
-      # Use a specific Ruby version
-      - name: Set up Ruby 3.3
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 3.3
-      - name: Tag and Push Gem
-        id: tag-and-push-gem
-        # This action basically runs `bundle exec rake release` if there is not an existing tag in GitHub
-        # for the current version of the gem, found in the `gemspec`.
-        uses: discourse/publish-rubygems-action@4bd305c65315cb691bad1e8de97a87aaf29a0a85
-        env:
-          # This is provided to GitHub Actions automatically – you do not need to add this secret.
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-          # These are used when the CD workflow pushes new tags to your repository.
-          # Using tags helps people using your gem easily see changes between versions.
-          # To get this value, try: `git config --get user.email`
-          GIT_EMAIL: gpassero@gmail.com
-          # To get this value, try: `git config --get user.name`
-          GIT_NAME: Gary Passero
-          # Get this from rubygems.org and add it as a secret to your repository.
-          RUBYGEMS_API_KEY: ${{secrets.RUBYGEMS_API_KEY}}
-      - name: Create GitHub Release
-        # This creates a new release at https://github.com/rubyatscale/alexevanczuk-example-gem/releases,
-        # which serves as an automatically generated changelog.
-        run: gh release create v${{steps.tag-and-push-gem.outputs.gem_version}} --generate-notes
-        # We only create a release if the previous step has published a new version.
-        if: ${{ steps.tag-and-push-gem.outputs.new_version == 'true' }}
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - uses: actions/checkout@v6
+      with:
+        persist-credentials: false
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.4'
+        bundler-cache: true
+
+    - uses: rubygems/release-gem@v1
+      with:
+        setup-trusted-publisher: false
+        attestations: false

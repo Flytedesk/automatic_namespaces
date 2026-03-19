@@ -1,30 +1,26 @@
 name: CI
 
-# This runs every time a new commit is pushed to GitHub.
-on: [pull_request, push]
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  rspec:
+  test:
     runs-on: ubuntu-latest
-    # We run our `rspec` tests on many versions of Ruby to ensure compatibility.
     strategy:
       matrix:
-        ruby:
-          - 3.4
-    env:
-      BUNDLE_GEMFILE: Gemfile
-    name: "RSpec tests: Ruby ${{ matrix.ruby }}"
+        ruby-version: ['3.4']
+
     steps:
-      # This is an action from the public marketplace. We reference a specific commit as a security measure,
-      # but there are many ways to reference an action:
-      # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#example-using-versioned-actions
-      - uses: actions/checkout@cbb722410c2e876e24abbe8de2cc27693e501dcb
-      - name: Set up Ruby ${{ matrix.ruby }}
-        uses: ruby/setup-ruby@4a9ddd6f338a97768b8006bf671dfbad383215f4
-        with:
-          # This caches the gems that bundle installs so subsequent runs can be faster.
-          # It is what allows us to not run `gem install bundler` and `bundle install` in subsequent steps.
-          bundler-cache: true
-          ruby-version: ${{ matrix.ruby }}
-      - name: Run tests
-        run: bundle exec rspec
+    - uses: actions/checkout@v6
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby-version }}
+        bundler-cache: true
+
+    - name: Run RSpec tests
+      run: bundle exec rspec

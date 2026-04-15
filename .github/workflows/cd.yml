@@ -1,10 +1,10 @@
 name: Release PR
+
 on:
   push:
     branches: [main]
   workflow_dispatch:
+
 jobs:
   release_pr:
     uses: flytedesk/.github/.github/workflows/reusable-ruby-gem-release-pr.yml@main
-    with:
-      gem_name: automatic_namespaces

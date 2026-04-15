@@ -1,18 +1,17 @@
-# To get started with Dependabot version updates, you'll need to specify which
-# package ecosystems to update and where the package manifests are located.
-# Please see the documentation for all configuration options:
-# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
-
 version: 2
 updates:
   - package-ecosystem: "bundler"
     directory: "/"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 4
+    open-pull-requests-limit: 10
     commit-message:
       prefix: "fix"
       include: "scope"
+    # Patch/minor updates are grouped into a single bulk PR and
+    # auto-merged by .github/workflows/dependabot-automerge.yml.
+    # Major updates fall outside the group and get an individual
+    # PR per gem so they can be reviewed one at a time.
     groups:
       bundler-non-major:
         patterns:
@@ -20,17 +19,12 @@ updates:
         update-types:
           - "minor"
           - "patch"
-      bundler-major:
-        patterns:
-          - "*"
-        update-types:
-          - "major"
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 4
+    open-pull-requests-limit: 10
     commit-message:
       prefix: "fix"
       include: "scope"
@@ -41,8 +35,3 @@ updates:
         update-types:
           - "minor"
           - "patch"
-      actions-major:
-        patterns:
-          - "*"
-        update-types:
-          - "major"

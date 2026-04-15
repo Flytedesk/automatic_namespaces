@@ -9,24 +9,40 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 2
+    open-pull-requests-limit: 4
     commit-message:
       prefix: "fix"
       include: "scope"
     groups:
-      bundler-all:
+      bundler-non-major:
         patterns:
           - "*"
+        update-types:
+          - "minor"
+          - "patch"
+      bundler-major:
+        patterns:
+          - "*"
+        update-types:
+          - "major"
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 2
+    open-pull-requests-limit: 4
     commit-message:
       prefix: "fix"
       include: "scope"
     groups:
-      actions-all:
+      actions-non-major:
         patterns:
           - "*"
+        update-types:
+          - "minor"
+          - "patch"
+      actions-major:
+        patterns:
+          - "*"
+        update-types:
+          - "major"

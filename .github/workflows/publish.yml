@@ -1,0 +1,10 @@
+name: Publish Gem
+on:
+  release:
+    types: [published]
+jobs:
+  publish:
+    uses: flytedesk/.github/.github/workflows/reusable-ruby-gem-publish.yml@main
+    with:
+      gem_name: automatic_namespaces
+    secrets: inherit

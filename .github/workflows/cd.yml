@@ -1,35 +1,10 @@
-name: CD
-
+name: Release PR
 on:
-  # Only run CD after CI completes successfully on main.
-  workflow_run:
-    workflows: [CI]
-    types: [completed]
+  push:
     branches: [main]
-
+  workflow_dispatch:
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' }}
-
-    permissions:
-      contents: write  # for pushing tags / creating releases
-
-    env:
-      GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
-
-    steps:
-    - uses: actions/checkout@v6
-      with:
-        persist-credentials: false
-
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: '3.4'
-        bundler-cache: true
-
-    - uses: rubygems/release-gem@v1
-      with:
-        setup-trusted-publisher: false
-        attestations: false
+  release_pr:
+    uses: flytedesk/.github/.github/workflows/reusable-ruby-gem-release-pr.yml@main
+    with:
+      gem_name: automatic_namespaces

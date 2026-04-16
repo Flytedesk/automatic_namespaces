@@ -19,21 +19,22 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Enable auto-merge for non-major updates
-        # Uses RELEASE_TOKEN (admin-owned PAT) rather than GITHUB_TOKEN so
-        # the merge is performed under an identity that can bypass the
-        # main-branch ruleset's pull_request review requirement.
+      - name: Approve and auto-merge non-major updates
+        # GITHUB_TOKEN approves (satisfying the 1-review requirement).
+        # RELEASE_TOKEN (admin-owned PAT) enables auto-merge so the
+        # squash-merge proceeds once required status checks pass.
         env:
-          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
           PR_URL: ${{ github.event.pull_request.html_url }}
           UPDATE_TYPE: ${{ steps.metadata.outputs.update-type }}
         run: |
           echo "Dependabot update type: $UPDATE_TYPE"
 
           if echo "$UPDATE_TYPE" | grep -Eq 'version-update:semver-(minor|patch)'; then
-            gh pr merge --auto --squash "$PR_URL"
-            echo "Auto-merge enabled for non-major update."
+            gh pr review --approve "$PR_URL"
+            GH_TOKEN="$MERGE_TOKEN" gh pr merge --auto --squash "$PR_URL"
+            echo "Approved and auto-merge enabled for non-major update."
           else
             echo "Skipping auto-merge: major or unknown update type."
           fi
-

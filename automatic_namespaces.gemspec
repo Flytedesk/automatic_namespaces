@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.summary = "Modify autoloading to assume all files within a directory belong in a namespace"
   spec.homepage = "https://github.com/gap777/automatic_namespaces"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 2.6.0"
+  spec.required_ruby_version = ">= 3.2.0"
 
   if spec.respond_to?(:metadata)
     spec.metadata["homepage_uri"] = spec.homepage

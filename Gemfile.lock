@@ -143,7 +143,7 @@ GEM
     minitest (6.0.5)
       drb (~> 2.0)
       prism (~> 1.5)
-    net-imap (0.5.12)
+    net-imap (0.5.14)
       date
       net-protocol
     net-pop (0.1.2)
@@ -281,7 +281,7 @@ GEM
     sorbet-runtime (0.6.13133)
     stringio (3.2.0)
     thor (1.5.0)
-    timeout (0.4.4)
+    timeout (0.6.1)
     tsort (0.2.0)
     tty-color (0.6.0)
     tty-cursor (0.7.1)

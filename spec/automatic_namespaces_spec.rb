@@ -54,6 +54,18 @@ RSpec.describe AutomaticNamespaces do
     end
   end
 
+  it "does not autoload app directories nested elsewhere in the pack" do
+    autoload_dirs = Rails.autoloaders.main.dirs
+    expect(autoload_dirs).to include(rails_dir.join("packs/jackets/app/models").to_s)
+    expect(autoload_dirs).not_to include(rails_dir.join("packs/jackets/test/app/models").to_s)
+  end
+
+  context "when automatic_pack_namespace_autoload_glob is provided" do
+    it "uses that glob to find the namespaced directories" do
+      expect(defined?(Coats::Parka)).to eq("constant")
+    end
+  end
+
   it "can find classes that are located at the root of the package.yml" do
     expect(defined?(Summer::Fun)).to eq("constant")
     expect(defined?(Summer::Swim)).to eq("constant")

@@ -8,6 +8,7 @@ class AutomaticNamespaces::Autoloader
   PACKAGE_NAMESPACE_OVERRIDE_KEY_OLD = "namespace_override".freeze
 
   DEFAULT_EXCLUDED_DIRS = %w[/app/helpers /app/inputs /app/javascript /app/views].freeze
+  DEFAULT_AUTOLOAD_GLOB = "/app/*".freeze
 
   def enable_automatic_namespaces
     namespaced_packages.each do |pack, metadata|
@@ -32,7 +33,7 @@ class AutomaticNamespaces::Autoloader
   end
 
   def pack_directories(pack_root_dir, metadata)
-    glob = metadata[PACKAGE_AUTOLOAD_GLOB_KEY] || metadata[PACKAGE_AUTOLOAD_GLOB_KEY_OLD] || "/**/app/*"
+    glob = metadata[PACKAGE_AUTOLOAD_GLOB_KEY] || metadata[PACKAGE_AUTOLOAD_GLOB_KEY_OLD] || DEFAULT_AUTOLOAD_GLOB
     Dir.glob("#{pack_root_dir}#{glob}").select { |dir| namespaced_directory?(dir, metadata) }
   end
 

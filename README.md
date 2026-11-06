@@ -111,7 +111,8 @@ happen during Rails application initialization; but the inflector is not availab
 
 If you would like to use your own file layout conventions for packs (i.e. not `app/*`) you can specify 
 your own glob by using `autoload_glob` to append the glob to the folder containing package.yml. This defaults
-to `'/**/app/*'` 
+to `'/app/*'`, the same pack directories packs-rails adds to the autoload paths. To also pick up `app` directories
+nested deeper inside the pack (the behavior before this default changed), use `'/**/app/*'`.
 
 ```yml
 metadata:

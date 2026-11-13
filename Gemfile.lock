@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    automatic_namespaces (1.0.1)
+    automatic_namespaces (1.1.0)
       activesupport
       packs-rails
 

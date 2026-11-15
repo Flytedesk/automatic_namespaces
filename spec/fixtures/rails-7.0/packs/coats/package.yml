@@ -1,0 +1,3 @@
+metadata:
+  automatic_pack_namespace: true
+  automatic_pack_namespace_autoload_glob: "/**/app/*"
